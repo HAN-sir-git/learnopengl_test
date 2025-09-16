@@ -1,0 +1,28 @@
+{
+    "tasks": [
+        {
+            "label": "cmake",
+            "command":"cmake",
+            "args": [
+                ".."
+            ]
+        },
+        {
+            "label": "make",
+            "command":"mingw32-make.exe",
+            "args": [
+            ]
+        },
+        {
+            "label": "build",   
+            "dependsOn":[
+                "cmake",
+                "make",
+            ]
+        }
+    ],
+    "version": "2.0.0",
+    "options": {
+        "cwd":"${workspaceFolder}/build",//,这里要指定到这个文件夹，在build里面进行代码执行。
+    }
+}
