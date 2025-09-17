@@ -14,7 +14,7 @@ include_directories(include)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
 # 设置你想包含的目录前缀
-set(SRC_PREFIX "01")
+set(SRC_PREFIX "02")
 # 使用变量拼接路径
 file(GLOB SOURCES "src/${SRC_PREFIX}*/*.cpp" "src/${SRC_PREFIX}*/*.h")
 

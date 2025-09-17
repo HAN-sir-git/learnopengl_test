@@ -6,7 +6,8 @@ const char* vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_PointSize = 20.0;\n"
     "}\0";
 
 // 片段着色器源码
@@ -14,7 +15,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" 
     "}\n\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
@@ -42,23 +43,39 @@ int main(){
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
         return -1;
     }
-    glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // 顶点数组
-    GLfloat vertices[] = {
+    float vertices[] = {
         -0.5f, -0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
          0.0f,  0.5f, 0.0f
     };
 
+
+    // 绑定顶点数组对象
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO); 
     // 顶点缓冲对象
     unsigned int VBO;
     glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+
+
     // 绑定缓冲
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // 把顶点数据复制到缓冲的内存中
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // 设置顶点属性指针
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // 解绑
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // 启用gl_point_size
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     // 创建顶点着色器
     unsigned int vertexShader;
@@ -101,7 +118,6 @@ int main(){
     }
 
     // 删除着色器，它们已经链接到我们的程序中了，已经不再需要了
-    glUseProgram(shaderProgram);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
@@ -114,9 +130,18 @@ int main(){
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glUseProgram(shaderProgram); 
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_LINE_LOOP, 0, 3);
+        glDrawArrays(GL_POINTS, 0, 3);
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shaderProgram);
+
     glfwTerminate();
 
     return 0;
